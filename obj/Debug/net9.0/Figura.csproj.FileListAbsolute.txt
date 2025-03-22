@@ -29,3 +29,4 @@ d:\dia\programacion grafica\proyectos\1\Figura\bin\Debug\net9.0\runtimes\win-x64
 d:\dia\programacion grafica\proyectos\1\Figura\bin\Debug\net9.0\runtimes\win-x86\native\glfw3.dll
 d:\dia\programacion grafica\proyectos\1\Figura\obj\Debug\net9.0\Figura.csproj.AssemblyReference.cache
 D:\dia\programacion grafica\proyectos\1\Figura\obj\Debug\net9.0\Figura.csproj.Up2Date
+d:\dia\programacion grafica\proyectos\1\Figura\obj\Debug\net9.0\Figura.sourcelink.json

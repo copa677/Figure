@@ -27,84 +27,98 @@ namespace OpenTKCubo3D
            base.OnLoad();
             GL.ClearColor(0.1f, 0.1f, 0.2f, 1.0f);
             GL.Enable(EnableCap.DepthTest);
-
+            //ejes
+            float x = -2.0f;
+            float y = -2.0f;
+            float z = 2.0f;
             // Configurar los vértices del cubo
             float[] vertices = {
                 //ATRAS
-                -0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista izq ultima
-                -0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f, 
+                -0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                -0.8f+x,  1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, 
 
-                 0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista der ultima
-                 0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x,  1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f,
+                -0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x,  -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.3f+x,  -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
                  
-                -0.3f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x,  -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.3f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+                 0.3f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x,  -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.8f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f,
+                -0.8f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.8f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f,   1.0f, -0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x,   1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f,
 
             //FRENTE
-                -0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                -0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f, 
+                -0.8f+x, -1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                -0.8f+x,  1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, 
 
-                 0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x, -1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x,  1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f,
+                -0.8f+x, -1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x, -1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x,  -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.3f+x,  -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
                  
-                -0.3f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x,  -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.3f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+                 0.3f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x,  -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.8f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f,
+                -0.8f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.8f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f,   1.0f, 0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x,   1.0f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
             //CONEXIONES ENTRE FRENTE Y ATRAS
-                -0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                -0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f, 
+                -0.8f+x,  1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                -0.8f+x,  1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f, 
 
-                 0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x,  1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x,  1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                -0.8f, -1.0f,  0.5f, 1.0f, 1.0f, 1.0f,
+                -0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                -0.8f+x, -1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista 
-                 0.8f, -1.0f,  0.5f, 1.0f, 1.0f, 1.0f,
+                 0.8f+x, -1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista 
+                 0.8f+x, -1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.3f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x, -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x, -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.3f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+                 0.3f+x, -0.5f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x, -0.5f+y, 0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                -0.3f, 1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                -0.3f, 1.0f,  0.5f, 1.0f, 1.0f, 1.0f,
+                -0.3f+x, 1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                -0.3f+x, 1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f,
 
-                 0.3f, 1.0f, -0.5f, 1.0f, 1.0f, 1.0f, //arista  
-                 0.3f, 1.0f,  0.5f, 1.0f, 1.0f, 1.0f,
+                 0.3f+x, 1.0f+y, -0.5f+z, 1.0f, 1.0f, 1.0f, //arista  
+                 0.3f+x, 1.0f+y,  0.5f+z, 1.0f, 1.0f, 1.0f,
 
+                //eje x
+                -5.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f,
+                 5.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f,
+
+                //eje y
+                0.0f,  -5.0f,  0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f,   5.0f,  0.0f, 0.0f, 0.0f, 1.0f,
+                
+                //eje z
+                0.0f,  0.0f,  -5.0f, 1.0f, 0.0f, 0.0f,
+                0.0f,  0.0f,   5.0f, 1.0f, 0.0f, 0.0f,
             };
 
             // Crear y enlazar el VAO
@@ -168,7 +182,7 @@ namespace OpenTKCubo3D
             GL.DeleteShader(fragmentShader);
 
             // Configurar la vista y la proyección
-            _view = Matrix4.LookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.UnitY);
+            _view = Matrix4.LookAt(new Vector3(0, 0, 12), Vector3.Zero, Vector3.UnitY);
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Size.X / (float)Size.Y, 0.1f, 100f);
         }
 
@@ -193,19 +207,19 @@ namespace OpenTKCubo3D
             // Rotar el cubo con las flechas del teclado
             if (input.IsKeyDown(Keys.Left))
             {
-                _angleY -= 0.02f; // Rotación en el eje Y (izquierda)
+                _angleY -= 0.002f; // Rotación en el eje Y (izquierda)
             }
             if (input.IsKeyDown(Keys.Right))
             {
-                _angleY += 0.02f; // Rotación en el eje Y (derecha)
+                _angleY += 0.002f; // Rotación en el eje Y (derecha)
             }
             if (input.IsKeyDown(Keys.Up))
             {
-                _angleX -= 0.02f; // Rotación en el eje X (arriba)
+                _angleX -= 0.002f; // Rotación en el eje X (arriba)
             }
             if (input.IsKeyDown(Keys.Down))
             {
-                _angleX += 0.02f; // Rotación en el eje X (abajo)
+                _angleX += 0.002f; // Rotación en el eje X (abajo)
             }
         }
 
@@ -224,7 +238,7 @@ namespace OpenTKCubo3D
 
             // Dibujar el cubo
             GL.BindVertexArray(_vertexArrayObject);
-            GL.DrawArrays(PrimitiveType.Lines, 0, 50); 
+            GL.DrawArrays(PrimitiveType.Lines, 0, 70); 
 
 
             SwapBuffers();
