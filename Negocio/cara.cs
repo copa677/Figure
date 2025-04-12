@@ -1,35 +1,38 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
-class Objeto3D
+public class Cara
 {
     private int _vao, _vbo;
-    private float[] _vertices;
+    public float[] _vertices;
+    public float cx,cy,cz;
     private Matrix4 _modelo;
-
-    private float cx;
-    private float cy;
-    private float cz;
-
-    //constructor
-    public Objeto3D(float[] vertices,float centroX, float centroY, float centroZ)
+    public Cara(List<Vertice> vertices, float x, float y, float z)
     {
-        _vertices = new float[vertices.Length];
-        copiar(vertices);
-        cx = centroX;
-        cy = centroY;
-        cz = centroZ;
-        actualizarVertices();
-        _modelo = Matrix4.Identity; // Matriz de identidad (sin transformación)
+        this._vertices = new float[vertices.Count * 6];
+        CargarVertices(vertices);
+        this.cx = x;
+        this.cy = y;
+        this.cz = z;
+        _modelo = Matrix4.Identity;
     }
 
-    public void copiar(float [] vert)
+    private void CargarVertices(List<Vertice> vertices)
     {
-        for (int i = 0; i < _vertices.Length; i++)
+        for(int i = 0; i < vertices.Count; i++)
         {
-            _vertices[i] = vert[i]; 
+            // Posición
+            _vertices[i * 6] = vertices[i].Posicion.X;
+            _vertices[i * 6 + 1] = vertices[i].Posicion.Y;
+            _vertices[i * 6 + 2] = vertices[i].Posicion.Z;
+            
+            // Color
+            _vertices[i * 6 + 3] = vertices[i].Color.X;
+            _vertices[i * 6 + 4] = vertices[i].Color.Y;
+            _vertices[i * 6 + 5] = vertices[i].Color.Z;
         }
     }
+
     public void Inicializar()
     {
         _vao = GL.GenVertexArray();
@@ -49,6 +52,13 @@ class Objeto3D
         GL.BindVertexArray(0);
     }
 
+    public void actualizarCentrosMasas(float x, float y, float z){
+        this.cx = cx + x;
+        this.cy = cy + y;
+        this.cz = cz + z;
+        actualizarVertices();
+    }
+
     public void actualizarVertices(){
         for (int i = 0; i < _vertices.Length; i += 6)
         {
@@ -58,8 +68,6 @@ class Objeto3D
         }
     }
     
-    
-
     public void SetTransform(Matrix4 transform)
     {
         _modelo = transform;
@@ -77,3 +85,4 @@ class Objeto3D
         GL.BindVertexArray(0);
     }
 }
+
