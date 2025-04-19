@@ -3,7 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Linq.Expressions;
+
 
 namespace OpenTKCubo3D
 {
@@ -12,17 +12,15 @@ namespace OpenTKCubo3D
         private float _cameraAngleY;
         private float _cameraAngleX;
         private float _cameraDistance = 20.0f;
-        //private int _vertexBufferObject;
-        //private int _vertexArrayObject;
         private int _shaderProgram;
         private Matrix4 _view;
         private Matrix4 _projection;
         private Escenario _escenario = new Escenario(new List<Objeto>(), 0f, 0f, 0f);
 
+
         public Program(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
-
         }
 
         protected override void OnLoad()
@@ -103,33 +101,11 @@ namespace OpenTKCubo3D
             if (input.IsKeyDown(Keys.Right)) _cameraAngleY -= rotationSpeed;
             if (input.IsKeyDown(Keys.Up)) _cameraAngleX -= rotationSpeed;
             if (input.IsKeyDown(Keys.Down)) _cameraAngleX += rotationSpeed;
-            //Cuando quieras guardar el estado actual de tu escenario:
-            if (KeyboardState.IsKeyDown(Keys.F5)) // Guardar con F5
-            {
-                string rutaGuardado = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "escenario.json");
-                EscenarioSerializer.GuardarEscenario(_escenario, rutaGuardado);
-                Console.WriteLine($"Escenario guardado en: {rutaGuardado}");
-            }
-            //Cargar el Escenario desde JSON
-            if (KeyboardState.IsKeyDown(Keys.F4)) // Cargar con F6
-            {
-                string rutaCarga = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "escenario.json");
-
-                if (File.Exists(rutaCarga))
-                {
-                    _escenario = EscenarioSerializer.CargarEscenario(rutaCarga);
-                    _escenario.Inicializar(); // Esto es CRUCIAL para recrear los buffers OpenGL
-                    Console.WriteLine($"Escenario cargado desde: {rutaCarga}");
-                }
-                else
-                {
-                    Console.WriteLine("No se encontró el archivo de escenario guardado");
-                }
-            }
 
             // Limitar ángulo vertical para evitar volteretas
             _cameraAngleX = MathHelper.Clamp(_cameraAngleX, -MathHelper.PiOver2 + 0.1f, MathHelper.PiOver2 - 0.1f);
         }
+
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
@@ -157,325 +133,24 @@ namespace OpenTKCubo3D
 
         static void Main(string[] args)
         {
-            List<Vertice> v1 = new List<Vertice>();
-            List<Vertice> v2 = new List<Vertice>();
-            List<Vertice> v3 = new List<Vertice>();
+            Serializer _serializer = new Serializer();
+            string rutaFija = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "escenarioU.json");
 
-            v1.Add(new Vertice(-5, 0, 0, 1, 1, 1));
-            v1.Add(new Vertice(5, 0, 0, 1, 1, 1));
-            v2.Add(new Vertice(0, -5, 0, 1, 1, 1));
-            v2.Add(new Vertice(0, 5, 0, 1, 1, 1));
-            v3.Add(new Vertice(0, 0, -5, 1, 1, 1));
-            v3.Add(new Vertice(0, 0, 5, 1, 1, 1));
-
-            List<Cara> C1 = new List<Cara>();
-            C1.Add(new Cara(v1, 0f, 0f, 0f));
-            List<Cara> C2 = new List<Cara>();
-            C2.Add(new Cara(v2, 0f, 0f, 0f));
-            List<Cara> C3 = new List<Cara>();
-            C3.Add(new Cara(v3, 0f, 0f, 0f));
-
-            List<Parte> P1 = new List<Parte>();
-            P1.Add(new Parte(C1, 0f, 0f, 0f));
-            P1.Add(new Parte(C2, 0f, 0f, 0f));
-            P1.Add(new Parte(C3, 0f, 0f, 0f));
-
-            List<Objeto> O1 = new List<Objeto>();
-            O1.Add(new Objeto(P1, 2f, 2f, 2f));
             
-            //figura U
-            //cara trasera
-            List<Vertice> Uvertice_cara1_parte1 = new List<Vertice>{
-                new Vertice(-0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
 
-                new Vertice(-0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara delantera
-            List<Vertice> Uvertice_cara2_parte1 = new List<Vertice>{
-                new Vertice(-0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara de arriba
-            List<Vertice> Uvertice_cara3_parte1 = new List<Vertice>{
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara de abajo
-            List<Vertice> Uvertice_cara4_parte1 = new List<Vertice>{
-                new Vertice(-0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara izquierda
-            List<Vertice> Uvertice_cara5_parte1 = new List<Vertice>{
-                new Vertice(-0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara derecha
-            List<Vertice> Uvertice_cara6_parte1 = new List<Vertice>{
-                new Vertice(-0.3f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f)
-            };
-            
-            //cara delantera 
-            List<Vertice> Uvertice_cara1_parte2 = new List<Vertice>{
-                new Vertice(0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara trasera
-            List<Vertice> Uvertice_cara2_parte2 = new List<Vertice>{
-                new Vertice(0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara arriba
-            List<Vertice> Uvertice_cara3_parte2 = new List<Vertice>{
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara abajo
-            List<Vertice> Uvertice_cara4_parte2 = new List<Vertice>{
-                new Vertice(0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara derecha
-            List<Vertice> Uvertice_cara5_parte2 = new List<Vertice>{
-                new Vertice(0.8f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.8f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.8f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara izquierda
-            List<Vertice> Uvertice_cara6_parte2 = new List<Vertice>{
-                new Vertice(0.3f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f)
-            };
-
-            //cara delantera
-            List<Vertice> Uvertice_cara1_parte3 = new List<Vertice>{
-                new Vertice(-0.3f, -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,   -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara trasera
-            List<Vertice> Uvertice_cara2_parte3 = new List<Vertice>{
-                new Vertice(-0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,   -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara de arriba
-            List<Vertice> Uvertice_cara3_parte3 = new List<Vertice>{
-                new Vertice(-0.3f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,   -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara de abajo
-            List<Vertice> Uvertice_cara4_parte3 = new List<Vertice>{
-                new Vertice(-0.3f, -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,   -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara derecha
-            List<Vertice> Uvertice_cara5_parte3 = new List<Vertice>{
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(0.3f,  -0.5f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-            //cara izquierda
-            List<Vertice> Uvertice_cara6_parte3 = new List<Vertice>{
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, 0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, 0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -1.0f, -0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -1.0f,  0.5f, 1.0f, 1.0f, 1.0f),
-
-                new Vertice(-0.3f,  -0.5f,  0.5f, 1.0f, 1.0f, 1.0f),
-                new Vertice(-0.3f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
-            };
-
-            List<Cara> Ucaras_parte1 = new List<Cara>{
-                new Cara(Uvertice_cara1_parte1,0,0,0),
-                new Cara(Uvertice_cara2_parte1,0,0,0),
-                new Cara(Uvertice_cara3_parte1,0,0,0),
-                new Cara(Uvertice_cara4_parte1,0,0,0),
-                new Cara(Uvertice_cara5_parte1,0,0,0),
-                new Cara(Uvertice_cara6_parte1,0,0,0),
-            };
-            List<Cara> Ucaras_parte2 = new List<Cara>{
-                new Cara(Uvertice_cara1_parte2,0,0,0),
-                new Cara(Uvertice_cara2_parte2,0,0,0),
-                new Cara(Uvertice_cara3_parte2,0,0,0),
-                new Cara(Uvertice_cara4_parte2,0,0,0),
-                new Cara(Uvertice_cara5_parte2,0,0,0),
-                new Cara(Uvertice_cara6_parte2,0,0,0),
-            };
-            List<Cara> Ucaras_parte3 = new List<Cara>{
-                new Cara(Uvertice_cara1_parte3,0,0,0),
-                new Cara(Uvertice_cara2_parte3,0,0,0),
-                new Cara(Uvertice_cara3_parte3,0,0,0),
-                new Cara(Uvertice_cara4_parte3,0,0,0),
-                new Cara(Uvertice_cara5_parte3,0,0,0),
-                new Cara(Uvertice_cara6_parte3,0,0,0),
-            };
-
-            List<Parte> Uparte = new List<Parte>{
-                new Parte(Ucaras_parte1,0,0,0),
-                new Parte(Ucaras_parte2,0,0,0),
-                new Parte(Ucaras_parte3,0,0,0)
-            };
-
-            List<Objeto> U = new List<Objeto>{
-                new Objeto(Uparte,0,0,0)
-            };
-
+            List<Objeto> U = new List<Objeto>();
 
             Escenario E = new Escenario(U, 1f, 1f, 1f);
+            //E.Rotacion('x',30.0f);
+            //E.Rotacion('x',30.0f);
+            //E.Escalacion(0.10f,0.10f,0.10f);
+            //E.Traslacion(2f,-1f,-3f);
+
+            //_serializer.GuardarAJson(E,rutaFija);
+            E = _serializer.CargarDesdeJson<Escenario>(rutaFija);
+            E.Objetos[0].Partes[0].Rotacion('y',30f);
 
             var nativeWindowSettings = new NativeWindowSettings()
             {
@@ -487,9 +162,11 @@ namespace OpenTKCubo3D
 
             using (var window = new Program(GameWindowSettings.Default, nativeWindowSettings))
             {
+                
                 window._escenario = E;
                 window.Run();
             }
         }
+
     }
 }

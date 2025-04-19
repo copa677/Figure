@@ -1,12 +1,32 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Text.Json.Serialization;
 
 public class Cara
 {
+    [JsonPropertyName("vertices")]
+    public float[] _vertices { get; set; }
+    
+    [JsonPropertyName("cx")]
+    public float cx { get; set; }
+    
+    [JsonPropertyName("cy")]
+    public float cy { get; set; }
+    
+    [JsonPropertyName("cz")]
+    public float cz { get; set; }
+    
+    // Campos no serializados
+    [JsonIgnore]
     private int _vao, _vbo;
-    public float[] _vertices;
-    public float cx,cy,cz;
+    [JsonIgnore]
     private Matrix4 _modelo;
+    
+
+    public Cara() {
+        _modelo = Matrix4.Identity;
+    } 
+
     public Cara(List<Vertice> vertices, float x, float y, float z)
     {
         this._vertices = new float[vertices.Count * 6];
@@ -17,6 +37,28 @@ public class Cara
         _modelo = Matrix4.Identity;
     }
 
+    public void Traslacion(float x, float y, float z){
+        _modelo *= Matrix4.CreateTranslation(x,y,z);
+    }
+    public void Rotacion(char eje, float grado){
+        switch (eje)
+        {
+            case 'x':
+                _modelo *= Matrix4.CreateRotationX(MathHelper.DegreesToRadians(grado));
+                break;
+            case 'y':
+                _modelo *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(grado));
+                break;
+            case 'z':
+                _modelo *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(grado));
+                break;
+            default:
+            break;
+        }
+    }
+    public void Escalacion(float x, float y,float z){
+        _modelo *= Matrix4.CreateScale(x,y,z);
+    }
     private void CargarVertices(List<Vertice> vertices)
     {
         for(int i = 0; i < vertices.Count; i++)

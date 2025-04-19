@@ -1,18 +1,34 @@
-
+using System.Text.Json.Serialization;
 public class Parte
 {
-    public List<Cara> Caras;
-    public float cx,cy,cz;
+    [JsonPropertyName("caras")]
+    public List<Cara> Caras { get; set; }
+    
+    [JsonPropertyName("cx")]
+    public float Cx { get; set; }
+    
+    [JsonPropertyName("cy")]
+    public float Cy { get; set; }
+    
+    [JsonPropertyName("cz")]
+    public float Cz { get; set; }
 
-    public Parte(List<Cara> caras, float x, float y, float z){
+    // Constructor sin parámetros necesario para deserialización
+    public Parte()
+    {
+        Caras = new List<Cara>();
+    }
+
+    public Parte(List<Cara> caras, float x, float y, float z)
+    {
         this.Caras = new List<Cara>();
         copiar(caras);
-        this.cx = x;
-        this.cy = y;
-        this.cz = z;
+        this.Cx = x;
+        this.Cy = y;
+        this.Cz = z;
         foreach (var item in Caras)
         {
-            item.actualizarCentrosMasas(cx,cy,cz);
+            item.actualizarCentrosMasas(Cx, Cy, Cz);
         }
     }
     private void copiar(List<Cara> _caras){
@@ -22,10 +38,29 @@ public class Parte
         }
     }
 
-    public void actualizarCentrosMasas(float x, float y, float z){
-        this.cx = cx + x;
-        this.cy = cy + y;
-        this.cz = cz + z;
+    public void Rotacion(char eje, float grado){
+        foreach (var item in Caras)
+        {
+            item.Rotacion(eje,grado);
+        }
+    }
+    public void Escalacion(float x, float y, float z){
+        foreach (var item in Caras)
+        {
+            item.Escalacion(x,y,z);
+        }
+    }   
+    public void Traslacion(float x, float y, float z){
+        foreach (var item in Caras)
+        {
+            item.Traslacion(x,y,z);
+        }
+    }   
+    public void actualizarCentrosMasas(float x, float y, float z)
+    {
+        this.Cx += x;
+        this.Cy += y;
+        this.Cz += z;
     }
 
     public void Inicializar()
