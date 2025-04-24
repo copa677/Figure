@@ -1,31 +1,34 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Drawing.Drawing2D;
 using System.Text.Json.Serialization;
 
 public class Cara
 {
     [JsonPropertyName("vertices")]
     public float[] _vertices { get; set; }
-    
+
     [JsonPropertyName("cx")]
     public float cx { get; set; }
-    
+
     [JsonPropertyName("cy")]
     public float cy { get; set; }
-    
+
     [JsonPropertyName("cz")]
     public float cz { get; set; }
-    
+
     // Campos no serializados
     [JsonIgnore]
     private int _vao, _vbo;
     [JsonIgnore]
     private Matrix4 _modelo;
-    
 
-    public Cara() {
+
+    public Cara()
+    {
         _modelo = Matrix4.Identity;
-    } 
+    }
+
 
     public Cara(List<Vertice> vertices, float x, float y, float z)
     {
@@ -37,37 +40,44 @@ public class Cara
         _modelo = Matrix4.Identity;
     }
 
-    public void Traslacion(float x, float y, float z){
-        _modelo *= Matrix4.CreateTranslation(x,y,z);
+    public void Traslacion(float x, float y, float z)
+    {
+        _modelo = _modelo * Matrix4.CreateTranslation(x, y, z);
     }
-    public void Rotacion(char eje, float grado){
+    public void Rotacion(char eje, float grado)
+    {
+        
+        Matrix4 rotacion = Matrix4.Identity;
+
         switch (eje)
         {
             case 'x':
-                _modelo *= Matrix4.CreateRotationX(MathHelper.DegreesToRadians(grado));
+                rotacion = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(grado));
                 break;
             case 'y':
-                _modelo *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(grado));
+                rotacion = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(grado));
                 break;
             case 'z':
-                _modelo *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(grado));
+                rotacion = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(grado));
                 break;
-            default:
-            break;
         }
+
+        // Orden correcto: traslacionVuelta * rotacion * traslacionOrigen
+        _modelo =  rotacion * _modelo;
     }
-    public void Escalacion(float x, float y,float z){
-        _modelo *= Matrix4.CreateScale(x,y,z);
+    public void Escalacion(float x, float y, float z)
+    {
+        _modelo = Matrix4.CreateScale(x, y, z) * _modelo;
     }
     private void CargarVertices(List<Vertice> vertices)
     {
-        for(int i = 0; i < vertices.Count; i++)
+        for (int i = 0; i < vertices.Count; i++)
         {
             // Posición
             _vertices[i * 6] = vertices[i].Posicion.X;
             _vertices[i * 6 + 1] = vertices[i].Posicion.Y;
             _vertices[i * 6 + 2] = vertices[i].Posicion.Z;
-            
+
             // Color
             _vertices[i * 6 + 3] = vertices[i].Color.X;
             _vertices[i * 6 + 4] = vertices[i].Color.Y;
@@ -94,25 +104,23 @@ public class Cara
         GL.BindVertexArray(0);
     }
 
-    public void actualizarCentrosMasas(float x, float y, float z){
-        this.cx = cx + x;
-        this.cy = cy + y;
-        this.cz = cz + z;
-        actualizarVertices();
+    public void actualizarCentrosMasas(float x, float y, float z)
+    {
+        this.cx += x;
+        this.cy += y;
+        this.cz += z;
+        _modelo = Matrix4.CreateTranslation(cx, cy, cz);
     }
 
-    public void actualizarVertices(){
+    public void actualizarVertices()
+    {
         for (int i = 0; i < _vertices.Length; i += 6)
         {
             _vertices[i] += cx;  // x
             _vertices[i + 1] += cy;  // y
             _vertices[i + 2] += cz;  // z
         }
-    }
-    
-    public void SetTransform(Matrix4 transform)
-    {
-        _modelo = transform;
+
     }
 
     public void Render(int shaderProgram)
@@ -123,7 +131,7 @@ public class Cara
         int modelLocation = GL.GetUniformLocation(shaderProgram, "model");
         GL.UniformMatrix4(modelLocation, false, ref _modelo);
 
-        GL.DrawArrays(PrimitiveType.Lines, 0, 72);
+        GL.DrawArrays(PrimitiveType.Lines, 0, _vertices.Length/6);
         GL.BindVertexArray(0);
     }
 }

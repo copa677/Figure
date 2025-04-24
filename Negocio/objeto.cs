@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+
 using System.Text.Json.Serialization;
 
 public class Objeto
@@ -28,10 +28,6 @@ public class Objeto
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
-        foreach (var item in Partes)
-        {
-            item.actualizarCentrosMasas(Cx, Cy, Cz);
-        }
     }
     private void copiar(List<Parte> _partes){
         foreach (var item in _partes)
@@ -61,6 +57,10 @@ public class Objeto
         this.Cx += x;
         this.Cy += y;
         this.Cz += z;
+        foreach (var item in Partes)
+        {
+            item.actualizarCentrosMasas(Cx, Cy, Cz);
+        }
     }
 
     public void Inicializar()

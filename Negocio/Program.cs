@@ -137,20 +137,64 @@ namespace OpenTKCubo3D
             string rutaFija = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "escenarioU.json");
+            Draw d = new Draw();       
 
-            
+            //---------
+            List<Vertice> v1 = new List<Vertice>();
+            List<Vertice> v2 = new List<Vertice>();
+            List<Vertice> v3 = new List<Vertice>();
+
+            v1.Add(new Vertice(-5, 0, 0, 1, 1, 1));
+            v1.Add(new Vertice(5, 0, 0, 1, 1, 1));
+            v2.Add(new Vertice(0, -5, 0, 1, 1, 1));
+            v2.Add(new Vertice(0, 5, 0, 1, 1, 1));
+            v3.Add(new Vertice(0, 0, -5, 1, 1, 1));
+            v3.Add(new Vertice(0, 0, 5, 1, 1, 1));
+
+            List<Cara> C1 = new List<Cara>();
+            C1.Add(new Cara(v1, 0f, 0f, 0f));
+            List<Cara> C2 = new List<Cara>();
+            C2.Add(new Cara(v2, 0f, 0f, 0f));
+            List<Cara> C3 = new List<Cara>();
+            C3.Add(new Cara(v3, 0f, 0f, 0f));
+
+            List<Parte> P1 = new List<Parte>();
+            P1.Add(new Parte(C1, 0f, 0f, 0f));
+            P1.Add(new Parte(C2, 0f, 0f, 0f));
+            P1.Add(new Parte(C3, 0f, 0f, 0f));
+
+            Objeto o2 = new Objeto(P1, 5f,2f,2f);
+            //--------
 
             List<Objeto> U = new List<Objeto>();
-
-            Escenario E = new Escenario(U, 1f, 1f, 1f);
-            //E.Rotacion('x',30.0f);
-            //E.Rotacion('x',30.0f);
-            //E.Escalacion(0.10f,0.10f,0.10f);
-            //E.Traslacion(2f,-1f,-3f);
+            Objeto o = d.CrearFiguraU(5f,2f,2f);
+            Objeto o3 = d.CrearFiguraU(0f,0f,0f);
+            U.Add(o);
+            U.Add(o2);
+            U.Add(o3);
+            Escenario E = new Escenario(U, 0, 0, 0);
+            
 
             //_serializer.GuardarAJson(E,rutaFija);
-            E = _serializer.CargarDesdeJson<Escenario>(rutaFija);
-            E.Objetos[0].Partes[0].Rotacion('y',30f);
+            //E = _serializer.CargarDesdeJson<Escenario>(rutaFija);
+            
+
+            //E.Rotacion('x',30.0f);
+            //E.Rotacion('y',30.0f);
+            //E.Escalacion(0.10f,0.10f,0.10f);
+            //E.Traslacion(2f,-1f,-3f);
+            E.Objetos[0].Rotacion('y',30f);
+            E.Objetos[2].Rotacion('x',30f);
+            //E.Objetos[0].Partes[0].Rotacion('y',30f);
+            //E.Objetos[0].Partes[0].Rotacion('y',10f);
+            //E.Objetos[2].Partes[0].Rotacion('y',40f);
+            //E.Objetos[0].Partes[1].Rotacion('x',30f);
+            //E.Objetos[0].Partes[0].Escalacion(1.5f,1.5f,1.5f);
+            
+            //E.Objetos[2].Partes[1].Escalacion(0.5f,0.5f,0.5f);
+            //E.Objetos[2].Partes[1].Traslacion(2f,0f,0f);
+            //E.Objetos[0].Partes[1].Escalacion(0.5f,0.5f,0.5f);
+            //E.Objetos[0].Partes[1].Traslacion(2f,0f,0f);
 
             var nativeWindowSettings = new NativeWindowSettings()
             {

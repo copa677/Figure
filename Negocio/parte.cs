@@ -26,10 +26,6 @@ public class Parte
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
-        foreach (var item in Caras)
-        {
-            item.actualizarCentrosMasas(Cx, Cy, Cz);
-        }
     }
     private void copiar(List<Cara> _caras){
         foreach (var item in _caras)
@@ -61,6 +57,10 @@ public class Parte
         this.Cx += x;
         this.Cy += y;
         this.Cz += z;
+        foreach (var item in Caras)
+        {
+            item.actualizarCentrosMasas(Cx, Cy, Cz);
+        }
     }
 
     public void Inicializar()
