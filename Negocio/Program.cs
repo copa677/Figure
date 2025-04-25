@@ -15,7 +15,7 @@ namespace OpenTKCubo3D
         private int _shaderProgram;
         private Matrix4 _view;
         private Matrix4 _projection;
-        private Escenario _escenario = new Escenario(new List<Objeto>(), 0f, 0f, 0f);
+        private Escenario _escenario = new Escenario();
 
 
         public Program(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -137,7 +137,7 @@ namespace OpenTKCubo3D
             string rutaFija = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "escenarioU.json");
-            Draw d = new Draw();       
+            Draw d = new Draw();
 
             //---------
             List<Vertice> v1 = new List<Vertice>();
@@ -151,46 +151,52 @@ namespace OpenTKCubo3D
             v3.Add(new Vertice(0, 0, -5, 1, 1, 1));
             v3.Add(new Vertice(0, 0, 5, 1, 1, 1));
 
-            List<Cara> C1 = new List<Cara>();
-            C1.Add(new Cara(v1, 0f, 0f, 0f));
-            List<Cara> C2 = new List<Cara>();
-            C2.Add(new Cara(v2, 0f, 0f, 0f));
-            List<Cara> C3 = new List<Cara>();
-            C3.Add(new Cara(v3, 0f, 0f, 0f));
+            Dictionary<string, Cara> C1 = new Dictionary<string, Cara>();
+            C1.Add("ejeX", new Cara("ejeX", v1, 0f, 0f, 0f));
 
-            List<Parte> P1 = new List<Parte>();
-            P1.Add(new Parte(C1, 0f, 0f, 0f));
-            P1.Add(new Parte(C2, 0f, 0f, 0f));
-            P1.Add(new Parte(C3, 0f, 0f, 0f));
+            Dictionary<string, Cara> C2 = new Dictionary<string, Cara>();
+            C2.Add("ejeY", new Cara("ejeY", v2, 0f, 0f, 0f));
 
-            Objeto o2 = new Objeto(P1, 5f,2f,2f);
+            Dictionary<string, Cara> C3 = new Dictionary<string, Cara>();
+            C3.Add("ejeZ", new Cara("ejeZ", v3, 0f, 0f, 0f));
+
+            // Creación de diccionario para las partes
+            Dictionary<string, Parte> P1 = new Dictionary<string, Parte>();
+            P1.Add("parteEjeX", new Parte(C1, 0f, 0f, 0f));
+            P1.Add("parteEjeY", new Parte(C2, 0f, 0f, 0f));
+            P1.Add("parteEjeZ", new Parte(C3, 0f, 0f, 0f));
+
+            Objeto o2 = new Objeto(P1, 5f, 2f, 2f);
             //--------
 
-            List<Objeto> U = new List<Objeto>();
-            Objeto o = d.CrearFiguraU(5f,2f,2f);
-            Objeto o3 = d.CrearFiguraU(0f,0f,0f);
-            U.Add(o);
-            U.Add(o2);
-            U.Add(o3);
+            Dictionary<String, Objeto> U = new Dictionary<string, Objeto>();
+            Objeto o = d.CrearFiguraU(5f, 2f, 2f);
+            Objeto o3 = d.CrearFiguraU(0f, 0f, 0f);
+            U.Add("U1", o);
+            U.Add("ejes", o2);
+            U.Add("U2", o3);
             Escenario E = new Escenario(U, 0, 0, 0);
-            
+
 
             //_serializer.GuardarAJson(E,rutaFija);
             //E = _serializer.CargarDesdeJson<Escenario>(rutaFija);
-            
+
 
             //E.Rotacion('x',30.0f);
-            //E.Rotacion('y',30.0f);
+            //E.Rotacion('y',-30.0f);
             //E.Escalacion(0.10f,0.10f,0.10f);
             //E.Traslacion(2f,-1f,-3f);
-            E.Objetos[0].Rotacion('y',30f);
-            E.Objetos[2].Rotacion('x',30f);
-            //E.Objetos[0].Partes[0].Rotacion('y',30f);
+            //E.Objetos["U1"].Escalacion(1.5f,1.5f,1.5f);
+            //E.Objetos["U1"].Escalacion(1.5f,1.5f,1.5f);
+            //E.Objetos["U2"].Escalacion(1.5f,1.5f,1.5f);
+            //E.Objetos["U1"].Rotacion('y',30f);
+            //E.Objetos[0].Partes[0].Escalacion(1.5f,1.5f,1.5f);
+            E.Objetos["U1"].Partes["parte1"].Rotacion('y',30f);
             //E.Objetos[0].Partes[0].Rotacion('y',10f);
             //E.Objetos[2].Partes[0].Rotacion('y',40f);
             //E.Objetos[0].Partes[1].Rotacion('x',30f);
             //E.Objetos[0].Partes[0].Escalacion(1.5f,1.5f,1.5f);
-            
+
             //E.Objetos[2].Partes[1].Escalacion(0.5f,0.5f,0.5f);
             //E.Objetos[2].Partes[1].Traslacion(2f,0f,0f);
             //E.Objetos[0].Partes[1].Escalacion(0.5f,0.5f,0.5f);
@@ -206,7 +212,7 @@ namespace OpenTKCubo3D
 
             using (var window = new Program(GameWindowSettings.Default, nativeWindowSettings))
             {
-                
+
                 window._escenario = E;
                 window.Run();
             }

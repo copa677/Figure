@@ -6,7 +6,8 @@ using System.Text.Json.Serialization;
 public class Cara
 {
     [JsonPropertyName("vertices")]
-    public float[] _vertices { get; set; }
+    //public float[] _vertices { get; set; }
+    public Dictionary<string, float[]> _vertices { get; set; }
 
     [JsonPropertyName("cx")]
     public float cx { get; set; }
@@ -26,14 +27,15 @@ public class Cara
 
     public Cara()
     {
+        _vertices = new Dictionary<string, float[]>();
         _modelo = Matrix4.Identity;
     }
 
 
-    public Cara(List<Vertice> vertices, float x, float y, float z)
+    public Cara(String name, List<Vertice> vertices, float x, float y, float z)
     {
-        this._vertices = new float[vertices.Count * 6];
-        CargarVertices(vertices);
+        _vertices = new Dictionary<string, float[]>();
+        CargarVertices(vertices, name);
         this.cx = x;
         this.cy = y;
         this.cz = z;
@@ -46,7 +48,7 @@ public class Cara
     }
     public void Rotacion(char eje, float grado)
     {
-        
+
         Matrix4 rotacion = Matrix4.Identity;
 
         switch (eje)
@@ -63,26 +65,30 @@ public class Cara
         }
 
         // Orden correcto: traslacionVuelta * rotacion * traslacionOrigen
-        _modelo =  rotacion * _modelo;
+        _modelo = rotacion * _modelo;
     }
     public void Escalacion(float x, float y, float z)
     {
         _modelo = Matrix4.CreateScale(x, y, z) * _modelo;
     }
-    private void CargarVertices(List<Vertice> vertices)
+    private void CargarVertices(List<Vertice> vertices, string identificador)
     {
+        float[] verticesArray = new float[vertices.Count * 6];
+
         for (int i = 0; i < vertices.Count; i++)
         {
             // Posición
-            _vertices[i * 6] = vertices[i].Posicion.X;
-            _vertices[i * 6 + 1] = vertices[i].Posicion.Y;
-            _vertices[i * 6 + 2] = vertices[i].Posicion.Z;
+            verticesArray[i * 6] = vertices[i].Posicion.X;
+            verticesArray[i * 6 + 1] = vertices[i].Posicion.Y;
+            verticesArray[i * 6 + 2] = vertices[i].Posicion.Z;
 
             // Color
-            _vertices[i * 6 + 3] = vertices[i].Color.X;
-            _vertices[i * 6 + 4] = vertices[i].Color.Y;
-            _vertices[i * 6 + 5] = vertices[i].Color.Z;
+            verticesArray[i * 6 + 3] = vertices[i].Color.X;
+            verticesArray[i * 6 + 4] = vertices[i].Color.Y;
+            verticesArray[i * 6 + 5] = vertices[i].Color.Z;
         }
+
+        _vertices[identificador] = verticesArray;
     }
 
     public void Inicializar()
@@ -90,9 +96,17 @@ public class Cara
         _vao = GL.GenVertexArray();
         _vbo = GL.GenBuffer();
 
+        // Combinar todos los vértices del diccionario en un solo array
+        List<float> todosVertices = new List<float>();
+        foreach (var verticeArray in _vertices.Values)
+        {
+            todosVertices.AddRange(verticeArray);
+        }
+        float[] verticesCombinados = todosVertices.ToArray();
+
         GL.BindVertexArray(_vao);
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ArrayBuffer, verticesCombinados.Length * sizeof(float), verticesCombinados, BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
@@ -112,26 +126,23 @@ public class Cara
         _modelo = Matrix4.CreateTranslation(cx, cy, cz);
     }
 
-    public void actualizarVertices()
-    {
-        for (int i = 0; i < _vertices.Length; i += 6)
-        {
-            _vertices[i] += cx;  // x
-            _vertices[i + 1] += cy;  // y
-            _vertices[i + 2] += cz;  // z
-        }
-
-    }
-
     public void Render(int shaderProgram)
     {
+        // Combinar todos los vértices del diccionario en un solo array
+        List<float> todosVertices = new List<float>();
+        foreach (var verticeArray in _vertices.Values)
+        {
+            todosVertices.AddRange(verticeArray);
+        }
+        float[] verticesCombinados = todosVertices.ToArray();
+
         GL.UseProgram(shaderProgram);
         GL.BindVertexArray(_vao);
 
         int modelLocation = GL.GetUniformLocation(shaderProgram, "model");
         GL.UniformMatrix4(modelLocation, false, ref _modelo);
 
-        GL.DrawArrays(PrimitiveType.Lines, 0, _vertices.Length/6);
+        GL.DrawArrays(PrimitiveType.Lines, 0, verticesCombinados.Length / 6);
         GL.BindVertexArray(0);
     }
 }

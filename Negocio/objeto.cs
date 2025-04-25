@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 public class Objeto
 {
     [JsonPropertyName("partes")]
-    public List<Parte> Partes { get; set; }
+    public Dictionary<string, Parte> Partes { get; set; }
     
     [JsonPropertyName("cx")]
     public float Cx { get; set; }
@@ -18,60 +18,69 @@ public class Objeto
     // Constructor sin parámetros necesario para deserialización
     public Objeto()
     {
-        Partes = new List<Parte>();
+        Partes = new Dictionary<string, Parte>();
     }
 
-    public Objeto(List<Parte> partes, float x, float y, float z)
+    public Objeto(Dictionary<string, Parte> partes, float x, float y, float z)
     {
-        this.Partes = new List<Parte>();
+        this.Partes = new Dictionary<string, Parte>();
         copiar(partes);
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
     }
-    private void copiar(List<Parte> _partes){
-        foreach (var item in _partes)
+    private void copiar(Dictionary<string, Parte> _partes)
+    {
+        foreach (var kvp in _partes)
         {
-            Partes.Add(item);
+            Partes.Add(kvp.Key, kvp.Value);
         }
     }
-    public void Rotacion(char eje, float grado){
-        foreach (var item in Partes)
+    
+    public void Rotacion(char eje, float grado)
+    {
+        foreach (var parte in Partes.Values)
         {
-            item.Rotacion(eje,grado);
+            parte.Rotacion(eje, grado);
         }
     }
-    public void Escalacion(float x, float y, float z){
-        foreach (var item in Partes)
+    
+    public void Escalacion(float x, float y, float z)
+    {
+        foreach (var parte in Partes.Values)
         {
-            item.Escalacion(x,y,z);
+            parte.Escalacion(x, y, z);
         }
-    }   
-    public void Traslacion(float x, float y, float z){
-        foreach (var item in Partes)
+    }
+    
+    public void Traslacion(float x, float y, float z)
+    {
+        foreach (var parte in Partes.Values)
         {
-            item.Traslacion(x,y,z);
+            parte.Traslacion(x, y, z);
         }
-    }   
-    public void actualizarCentrosMasas(float x, float y, float z){
+    }
+    
+    public void actualizarCentrosMasas(float x, float y, float z)
+    {
         this.Cx += x;
         this.Cy += y;
         this.Cz += z;
-        foreach (var item in Partes)
+        foreach (var parte in Partes.Values)
         {
-            item.actualizarCentrosMasas(Cx, Cy, Cz);
+            parte.actualizarCentrosMasas(Cx, Cy, Cz);
         }
     }
 
     public void Inicializar()
     {
-        foreach (var parte in Partes)
+        foreach (var parte in Partes.Values)
             parte.Inicializar();
     }
 
     public void Render(int shaderProgram)
     {
-        foreach (var parte in Partes)
-            parte.Render( shaderProgram);
+        foreach (var parte in Partes.Values)
+            parte.Render(shaderProgram);
     }
 }

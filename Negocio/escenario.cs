@@ -1,9 +1,10 @@
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 public class Escenario
 {
     [JsonPropertyName("objetos")]
-    public List<Objeto> Objetos { get; set; }
+    public Dictionary<string, Objeto> Objetos { get; set; }
     
     [JsonPropertyName("cx")]
     public float Cx { get; set; }
@@ -14,58 +15,66 @@ public class Escenario
     [JsonPropertyName("cz")]
     public float Cz { get; set; }
 
-    // Constructor sin parámetros necesario para deserialización
+    
     public Escenario()
     {
-        Objetos = new List<Objeto>();
+        Objetos = new Dictionary<string, Objeto>();
     }
 
-    public Escenario(List<Objeto> objetos, float x, float y, float z)
+    public Escenario(Dictionary<string, Objeto> objetos, float x, float y, float z)
     {
-        this.Objetos = new List<Objeto>();
+        this.Objetos = new Dictionary<string, Objeto>();
         copiar(objetos);
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
-        foreach (var item in this.Objetos)
+        foreach (var item in this.Objetos.Values)
         {
             item.actualizarCentrosMasas(Cx, Cy, Cz);
         }
     }
     
-    private void copiar(List<Objeto> objetos){
-        foreach (var item in objetos)
+    private void copiar(Dictionary<string, Objeto> objetos)
+    {
+        foreach (var kvp in objetos)
         {
-            Objetos.Add(item);
+            Objetos.Add(kvp.Key, kvp.Value);
         }
     }
-    public void Rotacion(char eje, float grado){
-        foreach (var item in Objetos)
+    
+    public void Rotacion(char eje, float grado)
+    {
+        foreach (var item in Objetos.Values)
         {
-            item.Rotacion(eje,grado);
+            item.Rotacion(eje, grado);
         }
     }
-    public void Escalacion(float x, float y, float z){
-        foreach (var item in Objetos)
+    
+    public void Escalacion(float x, float y, float z)
+    {
+        foreach (var item in Objetos.Values)
         {
-            item.Escalacion(x,y,z);
+            item.Escalacion(x, y, z);
         }
-    }   
-    public void Traslacion(float x, float y, float z){
-        foreach (var item in Objetos)
+    }
+    
+    public void Traslacion(float x, float y, float z)
+    {
+        foreach (var item in Objetos.Values)
         {
-            item.Traslacion(x,y,z);
+            item.Traslacion(x, y, z);
         }
-    }   
+    }
+    
     public void Inicializar()
     {
-        foreach (var obj in Objetos)
+        foreach (var obj in Objetos.Values)
             obj.Inicializar();
     }
 
     public void Render(int shaderProgram)
     {
-        foreach (var obj in Objetos)
+        foreach (var obj in Objetos.Values)
             obj.Render(shaderProgram);
     }
 }
