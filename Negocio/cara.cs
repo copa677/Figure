@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 public class Cara
 {
     [JsonPropertyName("vertices")]
-    //public float[] _vertices { get; set; }
     public Dictionary<string, float[]> _vertices { get; set; }
 
     [JsonPropertyName("cx")]
@@ -67,9 +66,9 @@ public class Cara
         // Orden correcto: traslacionVuelta * rotacion * traslacionOrigen
         _modelo = rotacion * _modelo;
     }
-    public void Escalacion(float x, float y, float z)
+    public void Escalacion(float escala)
     {
-        _modelo = Matrix4.CreateScale(x, y, z) * _modelo;
+        _modelo = Matrix4.CreateScale(escala) * _modelo;
     }
     private void CargarVertices(List<Vertice> vertices, string identificador)
     {
@@ -125,6 +124,10 @@ public class Cara
         this.cz += z;
         _modelo = Matrix4.CreateTranslation(cx, cy, cz);
     }
+    public void RecalcularCentrosMasas()
+    {
+        _modelo = Matrix4.CreateTranslation(cx, cy, cz);
+    }
 
     public void Render(int shaderProgram)
     {
@@ -146,4 +149,3 @@ public class Cara
         GL.BindVertexArray(0);
     }
 }
-

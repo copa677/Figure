@@ -19,8 +19,9 @@ public class Escenario
     public Escenario()
     {
         Objetos = new Dictionary<string, Objeto>();
+        RecalcularCentrosMasas();
     }
-
+    
     public Escenario(Dictionary<string, Objeto> objetos, float x, float y, float z)
     {
         this.Objetos = new Dictionary<string, Objeto>();
@@ -33,7 +34,13 @@ public class Escenario
             item.actualizarCentrosMasas(Cx, Cy, Cz);
         }
     }
-    
+    public void RecalcularCentrosMasas()
+    {
+        foreach (var cara in Objetos.Values)
+        {
+            cara.RecalcularCentrosMasas();
+        }
+    }
     private void copiar(Dictionary<string, Objeto> objetos)
     {
         foreach (var kvp in objetos)
@@ -50,11 +57,11 @@ public class Escenario
         }
     }
     
-    public void Escalacion(float x, float y, float z)
+    public void Escalacion(float escala)
     {
         foreach (var item in Objetos.Values)
         {
-            item.Escalacion(x, y, z);
+            item.Escalacion(escala);
         }
     }
     

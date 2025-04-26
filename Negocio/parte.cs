@@ -44,11 +44,11 @@ public class Parte
         }
     }
 
-    public void Escalacion(float x, float y, float z)
+    public void Escalacion(float escala)
     {
         foreach (var cara in Caras.Values)
         {
-            cara.Escalacion(x, y, z);
+            cara.Escalacion(escala);
         }
     }
 
@@ -67,6 +67,13 @@ public class Parte
         foreach (var cara in Caras.Values)
         {
             cara.actualizarCentrosMasas(Cx, Cy, Cz);
+        }
+    }
+    public void RecalcularCentrosMasas()
+    {
+        foreach (var cara in Caras.Values)
+        {
+            cara.RecalcularCentrosMasas();
         }
     }
 

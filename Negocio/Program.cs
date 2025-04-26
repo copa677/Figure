@@ -16,6 +16,8 @@ namespace OpenTKCubo3D
         private Matrix4 _view;
         private Matrix4 _projection;
         private Escenario _escenario = new Escenario();
+        UIEditor _editor = new UIEditor();
+        private ImGuiController _controller;
 
 
         public Program(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -30,7 +32,7 @@ namespace OpenTKCubo3D
             GL.Enable(EnableCap.DepthTest);
 
             _escenario.Inicializar();
-
+            this._controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             // Compilar shaders
             string vertexShaderSource = @"
                 #version 330 core
@@ -91,7 +93,7 @@ namespace OpenTKCubo3D
         {
             base.OnUpdateFrame(args);
             var input = KeyboardState;
-
+            var mouse = MouseState;
             if (input.IsKeyDown(Keys.Escape)) Close();
 
             float rotationSpeed = 0.002f;
@@ -104,6 +106,12 @@ namespace OpenTKCubo3D
 
             // Limitar ángulo vertical para evitar volteretas
             _cameraAngleX = MathHelper.Clamp(_cameraAngleX, -MathHelper.PiOver2 + 0.1f, MathHelper.PiOver2 - 0.1f);
+            //Zoom con la rueda del mouse
+            float zoomSpeed = 1.0f;
+            _cameraDistance -= mouse.ScrollDelta.Y * zoomSpeed;
+
+            // Limitar distancia mínima y máxima
+            _cameraDistance = MathHelper.Clamp(_cameraDistance, 2f, 50f);
         }
 
 
@@ -127,7 +135,9 @@ namespace OpenTKCubo3D
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "projection"), false, ref _projection);
 
             _escenario.Render(_shaderProgram);
-
+            _controller.Update(this, (float)args.Time);
+            _editor.Dibujar(_escenario);
+            _controller.Render();
             SwapBuffers();
         }
 
@@ -136,75 +146,27 @@ namespace OpenTKCubo3D
             Serializer _serializer = new Serializer();
             string rutaFija = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "escenarioU.json");
+            "escenario2.json");
             Draw d = new Draw();
 
-            //---------
-            List<Vertice> v1 = new List<Vertice>();
-            List<Vertice> v2 = new List<Vertice>();
-            List<Vertice> v3 = new List<Vertice>();
-
-            v1.Add(new Vertice(-5, 0, 0, 1, 1, 1));
-            v1.Add(new Vertice(5, 0, 0, 1, 1, 1));
-            v2.Add(new Vertice(0, -5, 0, 1, 1, 1));
-            v2.Add(new Vertice(0, 5, 0, 1, 1, 1));
-            v3.Add(new Vertice(0, 0, -5, 1, 1, 1));
-            v3.Add(new Vertice(0, 0, 5, 1, 1, 1));
-
-            Dictionary<string, Cara> C1 = new Dictionary<string, Cara>();
-            C1.Add("ejeX", new Cara("ejeX", v1, 0f, 0f, 0f));
-
-            Dictionary<string, Cara> C2 = new Dictionary<string, Cara>();
-            C2.Add("ejeY", new Cara("ejeY", v2, 0f, 0f, 0f));
-
-            Dictionary<string, Cara> C3 = new Dictionary<string, Cara>();
-            C3.Add("ejeZ", new Cara("ejeZ", v3, 0f, 0f, 0f));
-
-            // Creación de diccionario para las partes
-            Dictionary<string, Parte> P1 = new Dictionary<string, Parte>();
-            P1.Add("parteEjeX", new Parte(C1, 0f, 0f, 0f));
-            P1.Add("parteEjeY", new Parte(C2, 0f, 0f, 0f));
-            P1.Add("parteEjeZ", new Parte(C3, 0f, 0f, 0f));
-
-            Objeto o2 = new Objeto(P1, 5f, 2f, 2f);
-            //--------
-
             Dictionary<String, Objeto> U = new Dictionary<string, Objeto>();
-            Objeto o = d.CrearFiguraU(5f, 2f, 2f);
-            Objeto o3 = d.CrearFiguraU(0f, 0f, 0f);
-            U.Add("U1", o);
-            U.Add("ejes", o2);
-            U.Add("U2", o3);
+            
+            U.Add("U1", d.CrearFiguraU(5f, 2f, 2f));
+            U.Add("ejes", d.crearEjes(5f, 2f, 2f));
+            U.Add("U2", d.CrearFiguraU(0f, 0f, 0f));
             Escenario E = new Escenario(U, 0, 0, 0);
-
-
+            E.Objetos["U1"].Partes["derecha"].Rotacion('z',30f);
+            Escenario E1 = new Escenario();
+            //E.Rotacion('y',50);
             //_serializer.GuardarAJson(E,rutaFija);
-            //E = _serializer.CargarDesdeJson<Escenario>(rutaFija);
+            E1 = _serializer.CargarDesdeJson<Escenario>(rutaFija);
+            //E1.RecalcularCentrosMasas();
 
 
-            //E.Rotacion('x',30.0f);
-            //E.Rotacion('y',-30.0f);
-            //E.Escalacion(0.10f,0.10f,0.10f);
-            //E.Traslacion(2f,-1f,-3f);
-            //E.Objetos["U1"].Escalacion(1.5f,1.5f,1.5f);
-            //E.Objetos["U1"].Escalacion(1.5f,1.5f,1.5f);
-            //E.Objetos["U2"].Escalacion(1.5f,1.5f,1.5f);
-            //E.Objetos["U1"].Rotacion('y',30f);
-            //E.Objetos[0].Partes[0].Escalacion(1.5f,1.5f,1.5f);
-            E.Objetos["U1"].Partes["parte1"].Rotacion('y',30f);
-            //E.Objetos[0].Partes[0].Rotacion('y',10f);
-            //E.Objetos[2].Partes[0].Rotacion('y',40f);
-            //E.Objetos[0].Partes[1].Rotacion('x',30f);
-            //E.Objetos[0].Partes[0].Escalacion(1.5f,1.5f,1.5f);
-
-            //E.Objetos[2].Partes[1].Escalacion(0.5f,0.5f,0.5f);
-            //E.Objetos[2].Partes[1].Traslacion(2f,0f,0f);
-            //E.Objetos[0].Partes[1].Escalacion(0.5f,0.5f,0.5f);
-            //E.Objetos[0].Partes[1].Traslacion(2f,0f,0f);
 
             var nativeWindowSettings = new NativeWindowSettings()
             {
-                ClientSize = new Vector2i(800, 600),
+                ClientSize = new Vector2i(1000, 700),
                 Title = "Cubo 3D con OpenTK y Shaders",
                 Flags = ContextFlags.Default,
                 Profile = ContextProfile.Core,

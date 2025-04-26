@@ -29,6 +29,13 @@ public class Objeto
         this.Cy = y;
         this.Cz = z;
     }
+    public void RecalcularCentrosMasas()
+    {
+        foreach (var cara in Partes.Values)
+        {
+            cara.RecalcularCentrosMasas();
+        }
+    }
     private void copiar(Dictionary<string, Parte> _partes)
     {
         foreach (var kvp in _partes)
@@ -45,11 +52,11 @@ public class Objeto
         }
     }
     
-    public void Escalacion(float x, float y, float z)
+    public void Escalacion(float escala)
     {
         foreach (var parte in Partes.Values)
         {
-            parte.Escalacion(x, y, z);
+            parte.Escalacion(escala);
         }
     }
     
