@@ -1,4 +1,6 @@
+
 using System.Text.Json.Serialization;
+using OpenTK.Mathematics;
 
 public class Parte
 {
@@ -13,6 +15,9 @@ public class Parte
 
     [JsonPropertyName("cz")]
     public float Cz { get; set; }
+    public Transformaciones Transform { get; } = new Transformaciones();
+    [JsonIgnore]
+    public Vector3 centroDeMasa { get; set; }
 
     // Constructor sin parámetros necesario para deserialización
     public Parte()
@@ -27,6 +32,13 @@ public class Parte
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
+        centroDeMasa = CalcularCentro();
+    }
+
+    public Vector3 CalcularCentro()
+    {
+        var vert = Caras.Values.SelectMany(c => c._vertices.Values);
+        return Transform.CalcularCentro(vert);
     }
     private void copiar(Dictionary<string, Cara> _caras)
     {
@@ -36,45 +48,28 @@ public class Parte
         }
     }
 
-    public void Rotacion(char eje, float grado)
+    public void Rotacion(float xDeg, float yDeg, float zDeg)
     {
-        foreach (var cara in Caras.Values)
-        {
-            cara.Rotacion(eje, grado);
-        }
+        Transform.RotateA(centroDeMasa, xDeg, yDeg, zDeg);
     }
 
     public void Escalacion(float escala)
     {
-        foreach (var cara in Caras.Values)
-        {
-            cara.Escalacion(escala);
-        }
+        Transform.Position -= centroDeMasa;
+        Transform.Escalate(escala);
+        Transform.Position += centroDeMasa;
     }
 
     public void Traslacion(float x, float y, float z)
     {
-        foreach (var cara in Caras.Values)
-        {
-            cara.Traslacion(x, y, z);
-        }
+        Transform.Transladate(x, y, z);
     }
-    public void actualizarCentrosMasas(float x, float y, float z)
+    
+    public void RecalcularCentroDeMasa()
     {
-        this.Cx += x;
-        this.Cy += y;
-        this.Cz += z;
+        centroDeMasa = CalcularCentro();
         foreach (var cara in Caras.Values)
-        {
-            cara.actualizarCentrosMasas(Cx, Cy, Cz);
-        }
-    }
-    public void RecalcularCentrosMasas()
-    {
-        foreach (var cara in Caras.Values)
-        {
-            cara.RecalcularCentrosMasas();
-        }
+            cara.RecalcularCentroDeMasa();
     }
 
     public void Inicializar()
@@ -83,9 +78,11 @@ public class Parte
             cara.Inicializar();
     }
 
-    public void Render(int shaderProgram)
+    public void Render(int shaderProgram, Matrix4 acumulada)
     {
+        Matrix4 local = Transform.GetMatrix(centroDeMasa);
+        Matrix4 a = local * acumulada;
         foreach (var cara in Caras.Values)
-            cara.Render(shaderProgram);
+            cara.Render(shaderProgram,a);
     }
 }

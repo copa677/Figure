@@ -1,21 +1,24 @@
 
 using System.Text.Json.Serialization;
+using OpenTK.Mathematics;
 
 public class Objeto
 {
     [JsonPropertyName("partes")]
     public Dictionary<string, Parte> Partes { get; set; }
-    
+
     [JsonPropertyName("cx")]
     public float Cx { get; set; }
-    
+
     [JsonPropertyName("cy")]
     public float Cy { get; set; }
-    
+
     [JsonPropertyName("cz")]
     public float Cz { get; set; }
-
-    // Constructor sin parámetros necesario para deserialización
+    public Transformaciones Transform { get; } = new Transformaciones();
+    [JsonIgnore]
+    public Vector3 centroDeMasa { get; set; }
+    
     public Objeto()
     {
         Partes = new Dictionary<string, Parte>();
@@ -28,13 +31,23 @@ public class Objeto
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
+        centroDeMasa = CalcularCentro();
+        Traslacion(Cx,Cy,Cz);
+        RecalcularCentroDeMasa();
     }
-    public void RecalcularCentrosMasas()
+    public Vector3 CalcularCentro()
     {
-        foreach (var cara in Partes.Values)
-        {
-            cara.RecalcularCentrosMasas();
-        }
+        var _vert = Partes.Values
+        .SelectMany(fig => fig.Caras.Values
+            .SelectMany(c => c._vertices.Values));
+        return Transform.CalcularCentro(_vert);
+    }
+
+    public void RecalcularCentroDeMasa()
+    {
+        centroDeMasa = CalcularCentro();
+        foreach (var parte in Partes.Values)
+            parte.RecalcularCentroDeMasa();
     }
     private void copiar(Dictionary<string, Parte> _partes)
     {
@@ -43,40 +56,22 @@ public class Objeto
             Partes.Add(kvp.Key, kvp.Value);
         }
     }
-    
-    public void Rotacion(char eje, float grado)
+
+    public void Rotacion(float xDeg, float yDeg, float zDeg)
     {
-        foreach (var parte in Partes.Values)
-        {
-            parte.Rotacion(eje, grado);
-        }
+        Transform.RotateA(centroDeMasa, xDeg, yDeg, zDeg);
     }
-    
-    public void Escalacion(float escala)
+
+    public void Escalacion(float f)
     {
-        foreach (var parte in Partes.Values)
-        {
-            parte.Escalacion(escala);
-        }
+        Transform.Position -= centroDeMasa;
+        Transform.Escalate(f);
+        Transform.Position += centroDeMasa;
     }
-    
-    public void Traslacion(float x, float y, float z)
+
+    public void Traslacion(float dx, float dy, float dz)
     {
-        foreach (var parte in Partes.Values)
-        {
-            parte.Traslacion(x, y, z);
-        }
-    }
-    
-    public void actualizarCentrosMasas(float x, float y, float z)
-    {
-        this.Cx += x;
-        this.Cy += y;
-        this.Cz += z;
-        foreach (var parte in Partes.Values)
-        {
-            parte.actualizarCentrosMasas(Cx, Cy, Cz);
-        }
+        Transform.Transladate(dx, dy, dz);
     }
 
     public void Inicializar()
@@ -85,9 +80,11 @@ public class Objeto
             parte.Inicializar();
     }
 
-    public void Render(int shaderProgram)
+    public void Render(int shaderProgram, Matrix4 acumulada)
     {
+        Matrix4 local = Transform.GetMatrix(centroDeMasa);
+        Matrix4 a = local * acumulada;
         foreach (var parte in Partes.Values)
-            parte.Render(shaderProgram);
+            parte.Render(shaderProgram,a);
     }
 }

@@ -1,27 +1,29 @@
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using OpenTK.Mathematics;
 
 public class Escenario
 {
     [JsonPropertyName("objetos")]
     public Dictionary<string, Objeto> Objetos { get; set; }
-    
+
     [JsonPropertyName("cx")]
     public float Cx { get; set; }
-    
+
     [JsonPropertyName("cy")]
     public float Cy { get; set; }
-    
+
     [JsonPropertyName("cz")]
     public float Cz { get; set; }
+    public Transformaciones Transform { get; } = new Transformaciones();
+    [JsonIgnore]
+    public Vector3 centroDeMasa { get; set; }
 
-    
     public Escenario()
     {
         Objetos = new Dictionary<string, Objeto>();
-        RecalcularCentrosMasas();
     }
-    
+
     public Escenario(Dictionary<string, Objeto> objetos, float x, float y, float z)
     {
         this.Objetos = new Dictionary<string, Objeto>();
@@ -29,17 +31,38 @@ public class Escenario
         this.Cx = x;
         this.Cy = y;
         this.Cz = z;
-        foreach (var item in this.Objetos.Values)
-        {
-            item.actualizarCentrosMasas(Cx, Cy, Cz);
-        }
+        Traslacion(Cx,Cy,Cz);
+        RecalcularCentroDeMasa();
     }
-    public void RecalcularCentrosMasas()
+    public Vector3 CalcularCentro()
     {
-        foreach (var cara in Objetos.Values)
-        {
-            cara.RecalcularCentrosMasas();
-        }
+        var _vert = Objetos.Values
+            .SelectMany(obj => obj.Partes.Values
+                .SelectMany(fig => fig.Caras.Values
+                    .SelectMany(c => c._vertices.Values)));
+        return Transform.CalcularCentro(_vert);
+    }
+    public void RecalcularCentroDeMasa()
+    {
+        centroDeMasa = CalcularCentro();
+        foreach (var obj in Objetos.Values)
+            obj.RecalcularCentroDeMasa();
+    }
+    public void Rotacion(float xDeg, float yDeg, float zDeg)
+    {
+        Transform.RotateA(centroDeMasa, xDeg, yDeg, zDeg);
+    }
+
+    public void Escalacion(float f)
+    {
+        Transform.Position -= centroDeMasa;
+        Transform.Escalate(f);
+        Transform.Position += centroDeMasa;
+    }
+
+    public void Traslacion(float dx, float dy, float dz)
+    {
+        Transform.Transladate(dx, dy, dz);
     }
     private void copiar(Dictionary<string, Objeto> objetos)
     {
@@ -48,40 +71,20 @@ public class Escenario
             Objetos.Add(kvp.Key, kvp.Value);
         }
     }
-    
-    public void Rotacion(char eje, float grado)
-    {
-        foreach (var item in Objetos.Values)
-        {
-            item.Rotacion(eje, grado);
-        }
-    }
-    
-    public void Escalacion(float escala)
-    {
-        foreach (var item in Objetos.Values)
-        {
-            item.Escalacion(escala);
-        }
-    }
-    
-    public void Traslacion(float x, float y, float z)
-    {
-        foreach (var item in Objetos.Values)
-        {
-            item.Traslacion(x, y, z);
-        }
-    }
-    
+
+
+
     public void Inicializar()
     {
         foreach (var obj in Objetos.Values)
             obj.Inicializar();
     }
 
-    public void Render(int shaderProgram)
+    public void Render(int shaderProgram, Matrix4 acumulada)
     {
+        Matrix4 local = Transform.GetMatrix(centroDeMasa);
+        Matrix4 a = local * acumulada;
         foreach (var obj in Objetos.Values)
-            obj.Render(shaderProgram);
+            obj.Render(shaderProgram,a);
     }
 }

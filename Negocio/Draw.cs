@@ -1,3 +1,5 @@
+using OpenTK.Mathematics;
+
 class Draw
 {
     public Draw()
@@ -291,7 +293,7 @@ class Draw
 
         Dictionary<string, Parte> Upartes = new Dictionary<string, Parte>{
     {"izquierda", new Parte(Ucaras_parte1, 0f, 0f, 0f)},
-    {"derecha", new Parte(Ucaras_parte2, 0.5f, 0f, 0f)},
+    {"derecha", new Parte(Ucaras_parte2, 0f, 0f, 0f)},
     {"abajo", new Parte(Ucaras_parte3, 0f, 0f, 0f)}
 };
 
@@ -331,5 +333,42 @@ class Draw
             Objeto o2 = new Objeto(P1, x, y, z);
             return o2;
     }
+    public Objeto CrearCarretera(float x, float y, float z, float width, float length)
+    {
+        // Definir color gris asfalto
+        Vector3 roadColor = new Vector3(0.1f, 0.6f, 0.1f);
 
+        float halfW = width / 2f;
+        float halfL = length / 2f;
+
+        // Definir vértices (dos triángulos para formar el rectángulo)
+        List<Vertice> roadVerts = new List<Vertice>
+        {
+            // Primer triángulo
+            new Vertice(-halfW, 0f, -halfL, roadColor.X, roadColor.Y, roadColor.Z),
+            new Vertice( halfW, 0f, -halfL, roadColor.X, roadColor.Y, roadColor.Z),
+            new Vertice( halfW, 0f,  halfL, roadColor.X, roadColor.Y, roadColor.Z),
+
+            // Segundo triángulo
+            new Vertice(-halfW, 0f, -halfL, roadColor.X, roadColor.Y, roadColor.Z),
+            new Vertice( halfW, 0f,  halfL, roadColor.X, roadColor.Y, roadColor.Z),
+            new Vertice(-halfW, 0f,  halfL, roadColor.X, roadColor.Y, roadColor.Z)
+        };
+
+        // Crear la cara única de la carretera
+        var caraDict = new Dictionary<string, Cara>
+        {
+            { "carretera", new Cara("carretera_road", roadVerts, 0f, 0f, 0f) }
+        };
+
+        // Crear la parte que contendrá la cara
+        var parteDict = new Dictionary<string, Parte>
+        {
+            { "superficie", new Parte(caraDict, 0f, 0f, 0f) }
+        };
+    
+        // Crear el objeto carretera en la posición deseada
+        Objeto carretera = new Objeto(parteDict, x, y, z);
+        return carretera;
+    }
 }

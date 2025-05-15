@@ -1,6 +1,5 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using System.Drawing.Drawing2D;
 using System.Text.Json.Serialization;
 
 public class Cara
@@ -17,17 +16,16 @@ public class Cara
     [JsonPropertyName("cz")]
     public float cz { get; set; }
 
+    public Vector3 centroDeMasa { get; set; }
+    public Transformaciones Transform { get; } = new Transformaciones();
     // Campos no serializados
     [JsonIgnore]
     private int _vao, _vbo;
-    [JsonIgnore]
-    private Matrix4 _modelo;
 
 
     public Cara()
     {
         _vertices = new Dictionary<string, float[]>();
-        _modelo = Matrix4.Identity;
     }
 
 
@@ -38,37 +36,24 @@ public class Cara
         this.cx = x;
         this.cy = y;
         this.cz = z;
-        _modelo = Matrix4.Identity;
+
+        centroDeMasa = CalcularCentro();
     }
+    public Vector3 CalcularCentro() => Transform.CalcularCentro(_vertices.Values);
 
     public void Traslacion(float x, float y, float z)
     {
-        _modelo = _modelo * Matrix4.CreateTranslation(x, y, z);
+        Transform.Transladate(x, y, z);
     }
-    public void Rotacion(char eje, float grado)
+    public void Rotacion(float xDeg, float yDeg, float zDeg)
     {
-
-        Matrix4 rotacion = Matrix4.Identity;
-
-        switch (eje)
-        {
-            case 'x':
-                rotacion = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(grado));
-                break;
-            case 'y':
-                rotacion = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(grado));
-                break;
-            case 'z':
-                rotacion = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(grado));
-                break;
-        }
-
-        // Orden correcto: traslacionVuelta * rotacion * traslacionOrigen
-        _modelo = rotacion * _modelo;
+        Transform.RotateA(centroDeMasa, xDeg, yDeg, zDeg);
     }
     public void Escalacion(float escala)
     {
-        _modelo = Matrix4.CreateScale(escala) * _modelo;
+        Transform.Position -= centroDeMasa;
+        Transform.Escalate(escala);
+        Transform.Position += centroDeMasa;
     }
     private void CargarVertices(List<Vertice> vertices, string identificador)
     {
@@ -117,21 +102,16 @@ public class Cara
         GL.BindVertexArray(0);
     }
 
-    public void actualizarCentrosMasas(float x, float y, float z)
+
+    public void RecalcularCentroDeMasa()
     {
-        this.cx += x;
-        this.cy += y;
-        this.cz += z;
-        _modelo = Matrix4.CreateTranslation(cx, cy, cz);
-    }
-    public void RecalcularCentrosMasas()
-    {
-        _modelo = Matrix4.CreateTranslation(cx, cy, cz);
+        centroDeMasa = CalcularCentro();
     }
 
-    public void Render(int shaderProgram)
+    public void Render(int shaderProgram, Matrix4 acumulada)
     {
-        // Combinar todos los vértices del diccionario en un solo array
+        Matrix4 local = Transform.GetMatrix(centroDeMasa);
+        Matrix4 final = local * acumulada;
         List<float> todosVertices = new List<float>();
         foreach (var verticeArray in _vertices.Values)
         {
@@ -143,9 +123,9 @@ public class Cara
         GL.BindVertexArray(_vao);
 
         int modelLocation = GL.GetUniformLocation(shaderProgram, "model");
-        GL.UniformMatrix4(modelLocation, false, ref _modelo);
+        GL.UniformMatrix4(modelLocation, false, ref final);
 
-        GL.DrawArrays(PrimitiveType.Lines, 0, verticesCombinados.Length / 6);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, verticesCombinados.Length / 6);
         GL.BindVertexArray(0);
     }
 }
