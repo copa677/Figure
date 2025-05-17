@@ -9,9 +9,6 @@ namespace OpenTKCubo3D
 {
     public class Program : GameWindow
     {
-        private float _cameraAngleY;
-        private float _cameraAngleX;
-        private float _cameraDistance = 20.0f;
         private int _shaderProgram;
         private Matrix4 _view;
         private Matrix4 _projection;
@@ -20,6 +17,8 @@ namespace OpenTKCubo3D
         private ImGuiController _controller;
         private Libreto _libreto;
         private Serializer _serializar = new Serializer();
+        private Vector3 _cameraPos = new Vector3(0, 5, 20);
+        private Vector3 _cameraTarget = Vector3.Zero;
         public Program(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -78,26 +77,88 @@ namespace OpenTKCubo3D
             GL.DeleteShader(vertexShader);
             GL.DeleteShader(fragmentShader);
             _libreto = new Libreto(_escenario);
-
-            /*_libreto.AgregarInstruccion(new InstruccionAnimacion(
-            nombreObjeto: "Auto1", x: 0f, y: 0f, z: 2f, tiempoInicio: 0f, tiempoFin: 5f,
-            tipo: TipoTransformacion.Rotacion));*/
+/*
+            //rotacion
             _libreto.AgregarInstruccion(new InstruccionAnimacion(
-            nombreObjeto: "Auto1", x: 0f, y: 0f, z: -0.5f, tiempoInicio: 0f, tiempoFin: 3f,
+            nombreObjeto: "Auto1", x: 0f, y: -45f, z: 0f, tiempoInicio: 5f, tiempoFin: 6f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: 0f, y: 45f, z: 0f, tiempoInicio: 5f, tiempoFin: 6f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 0f, y: -45f, z: 0f, tiempoInicio: 6f, tiempoFin: 7f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: 0f, y: 45f, z: 0f, tiempoInicio: 6f, tiempoFin: 7f,
+            tipo: TipoTransformacion.Rotacion));
+
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 0f, y: -45f, z: 0f, tiempoInicio: 12f, tiempoFin: 13f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: 0f, y: 45f, z: 0f, tiempoInicio: 12f, tiempoFin: 13f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 0f, y: -45f, z: 0f, tiempoInicio: 13f, tiempoFin: 15f,
+            tipo: TipoTransformacion.Rotacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: 0f, y: 45f, z: 0f, tiempoInicio: 13f, tiempoFin: 15f,
+            tipo: TipoTransformacion.Rotacion));
+            
+            //traslacion
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 0f, y: 0f, z: -95f, tiempoInicio: 0f, tiempoFin: 5f,
             tipo: TipoTransformacion.Traslacion));
             _libreto.AgregarInstruccion(new InstruccionAnimacion(
-            nombreObjeto: "Auto2", x: 0f, y: 0f, z: -0.5f, tiempoInicio:1f, tiempoFin: 4f,
+            nombreObjeto: "Auto2", x: 0f, y: 0f, z: -95f, tiempoInicio: 0f, tiempoFin: 5f,
             tipo: TipoTransformacion.Traslacion));
-            /*_libreto.AgregarInstruccion(new InstruccionAnimacion(
-            nombreObjeto: "Auto2", x: 0f, y: 0f, z: 2f, tiempoInicio: 0f, tiempoFin: 5f,
-            tipo: TipoTransformacion.Rotacion));*/
 
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 3f, y: 0f, z: -3f, tiempoInicio: 5f, tiempoFin: 6f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: -6f, y: 0f, z: -6f, tiempoInicio: 5f, tiempoFin: 6f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 3f, y: 0f, z: -4f, tiempoInicio: 6f, tiempoFin: 7f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: -6f, y: 0f, z: -7f, tiempoInicio: 6f, tiempoFin: 7f,
+            tipo: TipoTransformacion.Traslacion));
+
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 103f, y: 0f, z: 0f, tiempoInicio: 7f, tiempoFin: 12f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: -104f, y: 0f, z: 0f, tiempoInicio: 7f, tiempoFin: 12f,
+            tipo: TipoTransformacion.Traslacion));
+
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 3f, y: 0f, z: 3f, tiempoInicio: 12f, tiempoFin: 13f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: -7f, y: 0f, z: 6f, tiempoInicio: 12f, tiempoFin: 13f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 4f, y: 0f, z: 4f, tiempoInicio: 13f, tiempoFin: 15f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: -8f, y: 0f, z: 7f, tiempoInicio: 13f, tiempoFin: 15f,
+            tipo: TipoTransformacion.Traslacion));
+
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto1", x: 0f, y: 0f, z: 95f, tiempoInicio: 15f, tiempoFin: 20f,
+            tipo: TipoTransformacion.Traslacion));
+            _libreto.AgregarInstruccion(new InstruccionAnimacion(
+            nombreObjeto: "Auto2", x: 0f, y: 0f, z: 95f, tiempoInicio: 15f, tiempoFin: 20f,
+            tipo: TipoTransformacion.Traslacion));     
+*/
             string rutaFija = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "libreto1.json");
+            "libreto2.json");
             //_serializar.GuardarAJson<Libreto>(_libreto,rutaFija);
-            //_libreto = _serializar.CargarDesdeJson<Libreto>(rutaFija);
-            //_libreto.Escenario = _escenario;
+            _libreto = _serializar.CargarDesdeJson<Libreto>(rutaFija);
+            _libreto.Escenario = _escenario;
             _libreto.Iniciar();
             _view = Matrix4.LookAt(new Vector3(3, 15, 3), Vector3.Zero, Vector3.UnitY);
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Size.X / (float)Size.Y, 0.1f, 200f);
@@ -119,28 +180,27 @@ namespace OpenTKCubo3D
         {
             base.OnUpdateFrame(args);
             var input = KeyboardState;
-            var mouse = MouseState;
             if (input.IsKeyDown(Keys.Escape)) Close();
 
-            float rotationSpeed = 0.002f;
-            // Rotar cámara con flechas
-            if (input.IsKeyDown(Keys.Left)) _cameraAngleY += rotationSpeed;
-            if (input.IsKeyDown(Keys.Right)) _cameraAngleY -= rotationSpeed;
-            if (input.IsKeyDown(Keys.Up)) _cameraAngleX += rotationSpeed;
-            if (input.IsKeyDown(Keys.Down)) _cameraAngleX -= rotationSpeed;
+            float moveSpeed = 0.08f;
 
-            // Limitar ángulo vertical para evitar volteretas
-            _cameraAngleX = MathHelper.Clamp(_cameraAngleX, -MathHelper.PiOver2 + 0.1f, MathHelper.PiOver2 - 0.1f);
+            // CAMBIO: controles de movimiento con teclas
+            if (input.IsKeyDown(Keys.W)) _cameraPos.Z -= moveSpeed;
+            if (input.IsKeyDown(Keys.S)) _cameraPos.Z += moveSpeed;
+            if (input.IsKeyDown(Keys.A)) _cameraPos.X -= moveSpeed;
+            if (input.IsKeyDown(Keys.D)) _cameraPos.X += moveSpeed;
+            if (input.IsKeyDown(Keys.Q)) _cameraPos.Y -= moveSpeed;
+            if (input.IsKeyDown(Keys.E)) _cameraPos.Y += moveSpeed;
 
-            // Zoom con la rueda del mouse
-            _cameraAngleX = MathHelper.Clamp(_cameraAngleX, -MathHelper.PiOver2 + 0.1f, MathHelper.PiOver2 - 0.1f);
-            //Zoom con la rueda del mouse
-            float zoomSpeed = 1.0f;
-            _cameraDistance -= mouse.ScrollDelta.Y * zoomSpeed;
+            float targetSpeed = 0.08f;
 
-            // Limitar distancia mínima y máxima
-            _cameraDistance = MathHelper.Clamp(_cameraDistance, 20f, 70f);
-
+            // Movimiento del punto al que se mira
+            if (input.IsKeyDown(Keys.Left)) _cameraTarget.X -= targetSpeed;
+            if (input.IsKeyDown(Keys.Right)) _cameraTarget.X += targetSpeed;
+            if (input.IsKeyDown(Keys.Up)) _cameraTarget.Y += targetSpeed;
+            if (input.IsKeyDown(Keys.Down)) _cameraTarget.Y -= targetSpeed;
+            if (input.IsKeyDown(Keys.KeyPad0)) _cameraTarget.Z -= targetSpeed;
+            if (input.IsKeyDown(Keys.KeyPad1)) _cameraTarget.Z += targetSpeed;
         }
 
 
@@ -150,13 +210,9 @@ namespace OpenTKCubo3D
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.UseProgram(_shaderProgram);
-            // Calcular posición de la cámara
-            Vector3 cameraPos = new Vector3(
-                _cameraDistance * (float)Math.Sin(_cameraAngleY) * (float)Math.Cos(_cameraAngleX),
-                _cameraDistance * (float)Math.Sin(_cameraAngleX),
-                _cameraDistance * (float)Math.Cos(_cameraAngleY) * (float)Math.Cos(_cameraAngleX)
-            );
-            _view = Matrix4.LookAt(cameraPos, Vector3.Zero, Vector3.UnitY); // La cámara mira al centro
+            // CAMBIO: usa la nueva posición de cámara
+            Vector3 cameraPos = _cameraPos;
+            _view = Matrix4.LookAt(cameraPos, _cameraTarget, Vector3.UnitY);
 
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "view"), false, ref _view);
             GL.UniformMatrix4(GL.GetUniformLocation(_shaderProgram, "projection"), false, ref _projection);
@@ -173,31 +229,24 @@ namespace OpenTKCubo3D
             Serializer _serializer = new Serializer();
             string rutaFija = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "escenario4.json");
-
-            Draw d = new Draw();
-            Dictionary<String, Objeto> U = new Dictionary<string, Objeto>();
-
-            U.Add("U1", d.CrearFiguraU(5f, 2f, 2f));
-            U.Add("ejes", d.crearEjes(5f, 2f, 2f));
-            U.Add("U2", d.CrearFiguraU(0f, 0f, 0f));
-            U.Add("U3", d.CrearFiguraU(-3f, -3f, -3f));
-            Escenario E = new Escenario(U, 0, 0, 0);
+            "escenariAnimacion.json");
 
             Escenario E1 = new Escenario();
-            //_serializer.GuardarAJson(E,rutaFija);
-            //E1 = _serializer.CargarDesdeJson<Escenario>(rutaFija);
-            Objeto auto = LectorModeloObj.ImportarOBJConMaterial("Autos/CarV6/auto1.obj",-3f,-2f,0f);
-            Objeto auto1 = LectorModeloObj.ImportarOBJConMaterial("Autos/CarV6/auto1.obj",3f,-2f,0f);
-            //Objeto carretera = d.CrearCarretera(0, 0, 0, 100, 100);
-            //Objeto carretera = LectorModeloObj.ImportarOBJConMaterial("Autos/CarV5/Carretera.obj");
+            /*Objeto auto = LectorModeloObj.ImportarOBJConMaterial("Autos/CarV6/auto1.obj", -3f, 0f, 0f);
+            Objeto auto1 = LectorModeloObj.ImportarOBJConMaterial("Autos/CarV6/auto1.obj", 120f, 0f, 0f);
+            Objeto carretera = LectorModeloObj.ImportarOBJConMaterial("Autos/3/c3.obj");
             auto.Rotacion(0f, 25f, 0f);
             auto1.Rotacion(0f, 25f, 0f);
-            //carretera.Escalacion(3.5f);
-            //carretera.Traslacion(-9f, 0f, -60f);
             E1.Objetos.Add("Auto1", auto);
             E1.Objetos.Add("Auto2", auto1);
-            //E1.Objetos.Add("carretera", carretera);
+            E1.Objetos.Add("carretera", carretera);*/
+
+            //_serializer.GuardarAJson(E1,rutaFija);
+            E1 = _serializer.CargarDesdeJson<Escenario>(rutaFija);
+            E1.Objetos["Auto1"].Rotacion(0f, 25f, 0f);
+            E1.Objetos["Auto2"].Rotacion(0f, 25f, 0f);
+            E1.Objetos["Auto1"].Traslacion(-3f, 0f, 0f);
+            E1.Objetos["Auto2"].Traslacion(120f, 0f, 0f);
             var nativeWindowSettings = new NativeWindowSettings()
             {
                 ClientSize = new Vector2i(1000, 700),
@@ -208,7 +257,6 @@ namespace OpenTKCubo3D
 
             using (var window = new Program(GameWindowSettings.Default, nativeWindowSettings))
             {
-
                 window._escenario = E1;
                 window.Run();
             }

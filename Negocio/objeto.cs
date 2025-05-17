@@ -15,7 +15,7 @@ public class Objeto
 
     [JsonPropertyName("cz")]
     public float Cz { get; set; }
-    public Transformaciones Transform { get; } = new Transformaciones();
+    public Transformaciones Transform { get; set; } = new Transformaciones();
     [JsonIgnore]
     public Vector3 centroDeMasa { get; set; }
     

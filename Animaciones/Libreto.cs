@@ -7,8 +7,8 @@ using OpenTK.Mathematics;
 public class Libreto
 {
     [JsonIgnore]
-    public Escenario Escenario { get; set;}
-    public List<InstruccionAnimacion> Instrucciones { get; set;} = new List<InstruccionAnimacion>();
+    public Escenario Escenario { get; set; }
+    public List<InstruccionAnimacion> Instrucciones { get; set; } = new List<InstruccionAnimacion>();
     [JsonIgnore]
     private Thread hilo;
     [JsonIgnore]
@@ -16,7 +16,8 @@ public class Libreto
     [JsonIgnore]
     private bool activo = false;
 
-    public Libreto() {
+    public Libreto()
+    {
         Instrucciones = new List<InstruccionAnimacion>();
     }
 
@@ -36,7 +37,11 @@ public class Libreto
 
         activo = true;
         reloj.Restart();
-
+        // Reiniciar t previos
+        foreach (var instr in Instrucciones)
+        {
+            instr.UltimoT = 0f;
+        }
         hilo = new Thread(() =>
         {
             while (activo)
@@ -51,10 +56,12 @@ public class Libreto
                         {
                             float duracion = instr.TiempoFin - instr.TiempoInicio;
                             float t = (tiempoActual - instr.TiempoInicio) / duracion;
+                            float deltaT = t - instr.UltimoT;
+                            instr.UltimoT = t;
 
-                            float valX = instr.X * t;
-                            float valY = instr.Y * t;
-                            float valZ = instr.Z * t;
+                            float valX = instr.X * deltaT;
+                            float valY = instr.Y * deltaT;
+                            float valZ = instr.Z * deltaT;
 
                             switch (instr.Tipo)
                             {

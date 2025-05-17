@@ -1,0 +1,102 @@
+newmtl Tree11Mtl
+Material Color
+Ka 0.358654 0.113921 0.0315514
+Kd 0.358654 0.113921 0.0315514
+Ks 0.0225038 0.00714798 0.0019797 
+
+d 1
+
+Ns 0
+
+newmtl Baseplate1Mtl
+Material Color
+Ka 0.124741 0.113921 0.121986
+Kd 0.124741 0.113921 0.121986
+Ks 0.00782688 0.00714798 0.00765401 
+
+d 1
+
+Ns 0
+
+newmtl Wedge4Mtl
+Material Color
+Ka 0.373615 0.368591 0.383775
+Kd 0.373615 0.368591 0.383775
+Ks 0.0146516 0.0144545 0.01505 
+
+d 1
+
+Ns 0
+
+map_Ka Wedge4_diff.png
+map_Kd Wedge4_diff.png
+map_d Wedge4_diff.png
+
+map_Bump Wedge4_nmap.png
+
+map_Ns Wedge4_spec.png
+
+newmtl Tree21Mtl
+Material Color
+Ka 0.103634 0.329729 0.0697271
+Kd 0.103634 0.329729 0.0697271
+Ks 0.00650253 0.0206889 0.00437503 
+
+d 1
+
+Ns 0
+
+newmtl Wedge1Mtl
+Material Color
+Ka 0.425905 0.420508 0.436813
+Kd 0.425905 0.420508 0.436813
+Ks 0.0183724 0.0181396 0.0188429 
+
+d 1
+
+Ns 0
+
+map_Ka Wedge1_diff.png
+map_Kd Wedge1_diff.png
+map_d Wedge1_diff.png
+
+map_Bump Wedge1_nmap.png
+
+map_Ns Wedge1_spec.png
+
+newmtl Part2Mtl
+Material Color
+Ka 1 0.442323 0
+Kd 1 0.442323 0
+Ks 0.0392157 0.017346 0 
+
+d 1
+
+Ns 0
+
+map_Ka Wedge4_diff.png
+map_Kd Wedge4_diff.png
+map_d Wedge4_diff.png
+
+map_Bump Wedge4_nmap.png
+
+map_Ns Wedge4_spec.png
+
+newmtl Part6Mtl
+Material Color
+Ka 0.0528416 0.0528416 0.0528416
+Kd 0.0528416 0.0528416 0.0528416
+Ks 0.00227944 0.00227944 0.00227944 
+
+d 1
+
+Ns 0
+
+map_Ka Wedge1_diff.png
+map_Kd Wedge1_diff.png
+map_d Wedge1_diff.png
+
+map_Bump Wedge1_nmap.png
+
+map_Ns Wedge1_spec.png
+

@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.X86;
 using System.Text.Json.Serialization;
 using OpenTK.Mathematics;
 
@@ -38,7 +39,19 @@ public class Transformaciones
             Scale *= new Vector3(n);
         }
     }
-    public  Vector3 CalcularCentro(IEnumerable<float[]> puntos)
+    public void SetPosition(float x, float y, float z)
+    {
+        Position = new Vector3(x, y, z);
+    }
+    public void SetRotation(float x, float y, float z)
+    {
+        Rotation = new Vector3(x, y, z);
+    }
+    public void SetScale(float x, float y, float z)
+    {
+        Scale = new Vector3(x, y, z);
+    }
+    public Vector3 CalcularCentro(IEnumerable<float[]> puntos)
     {
         float minX = float.MaxValue, maxX = float.MinValue;
         float minY = float.MaxValue, maxY = float.MinValue;

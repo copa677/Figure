@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 public class InstruccionAnimacion
 {
     public string NombreObjeto { get; set;}
@@ -7,7 +9,9 @@ public class InstruccionAnimacion
     public float TiempoInicio { get; set;}
     public float TiempoFin { get; set;}
     public TipoTransformacion Tipo { get; set;}
-    public InstruccionAnimacion() {}
+    [JsonIgnore]
+    public float UltimoT { get; set; } = 0f;
+    public InstruccionAnimacion() { }
     public InstruccionAnimacion(string nombreObjeto, float x, float y, float z, float tiempoInicio, float tiempoFin, TipoTransformacion tipo)
     {
         NombreObjeto = nombreObjeto;
